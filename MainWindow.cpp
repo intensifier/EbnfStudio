@@ -449,7 +449,8 @@ void MainWindow::onGenCpp()
     EbnfSyntax* syn = d_edit->getSyntax();
     gen.generate( info.absoluteDir().absoluteFilePath( info.completeBaseName() + ".atg"), syn, d_tbl );
     SynTreeGen::generateTt( d_edit->getPath(), syn, true, false );
-    SynTreeGen::generateTree( d_edit->getPath(), syn, true );
+    if( syn->getPragma("%no_syntree").isEmpty() )
+        SynTreeGen::generateTree( d_edit->getPath(), syn, true );
 }
 
 void MainWindow::onGenVisitor()

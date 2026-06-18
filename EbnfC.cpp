@@ -26,21 +26,26 @@
 #include "EbnfToken.h"
 #include "EbnfVersion.h"
 #include "FirstFollowSet.h"
+#include "SynTreeGen.h"
 #include <QCoreApplication>
 #include <QFileInfo>
 #include <QDir>
 #include <QtDebug>
 #include <QElapsedTimer>
 
-static void printErrors( const EbnfErrors& errs )
+static bool printErrors( const EbnfErrors& errs )
 {
+    int count = 0;
     foreach( const EbnfErrors::Entry& e, errs.getErrors())
     {
         if( e.d_isErr )
+        {
+            count++;
             qCritical() << "ERR" << e.d_line << ":" << e.d_col << ":" << e.d_msg.toUtf8().constData();
-        else
+        }else
             qWarning() << "WRN" << e.d_line << ":" << e.d_col << ":" << e.d_msg.toUtf8().constData();
     }
+    return count;
 }
 
 int main(int argc, char *argv[])
@@ -108,9 +113,10 @@ int main(int argc, char *argv[])
     lex.setStream( &file );
     if( !p.parse( &lex ) )
     {
-        printErrors(errs);
-        return 1;
-    }else
+        if( printErrors(errs) )
+            return 1;
+    }
+
     {
         EbnfSyntaxRef syn(p.getSyntax());
         if( !syn->finishSyntax() )
@@ -165,6 +171,9 @@ int main(int argc, char *argv[])
             CppGen gen;
             gen.d_exact = useAnalyzer2;
             gen.generate(path, syn.data(), &tbl);
+            SynTreeGen::generateTt( path, syn.data(), true, false );
+            if( syn->getPragma("%no_syntree").isEmpty() )
+                SynTreeGen::generateTree( path, syn.data(), true );
         }
 
         if( !errs.getErrors().isEmpty() )

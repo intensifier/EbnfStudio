@@ -32,7 +32,8 @@ SOURCES += \
     EbnfToken.cpp \
     FirstFollowSet.cpp \
     GenUtils.cpp \
-    LaParser.cpp
+    LaParser.cpp \
+    SynTreeGen.cpp
 
 HEADERS += \
     CppGen.h \
@@ -46,7 +47,8 @@ HEADERS += \
     EbnfVersion.h \
     FirstFollowSet.h \
     GenUtils.h \
-    LaParser.h
+    LaParser.h \
+    SynTreeGen.h
 
 
 
